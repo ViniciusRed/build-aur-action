@@ -4,12 +4,15 @@ branding:
   icon: user-check
   color: gray-dark
 inputs:
-  repo-name:
-    description: 'AUR repository name to build'
+  package-source:
+    description: 'AUR package source (Git URL or local path)'
     required: true
-    default: 'linux-ck-uksm'
+  custom-repo:
+    description: 'Custom repository to add to pacman.conf'
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.repo-name }}
+    - ${{ inputs.package-source }}
+    - ${{ inputs.custom-repo }}
