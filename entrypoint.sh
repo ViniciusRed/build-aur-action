@@ -10,7 +10,7 @@ if [ "$3" == "true" ]; then
     echo "Enabling multilib repository..."
     # Uncomment multilib lines in pacman.conf
     sed -i 's/^#\[multilib\]/[multilib]/' /etc/pacman.conf
-    sed -i 's/^#Include = \/etc\/pacman.d\/mirrorlist/Include = \/etc\/pacman.d\/mirrorlist/' /etc/pacman.conf
+    sed -i 's/^#Include = \/etc\/pacman.d\/mirrorlist$/Include = \/etc\/pacman.d\/mirrorlist/' /etc/pacman.conf
     echo "Refreshing package databases..."
     pacman -Syy
     echo "Multilib repository enabled successfully"
