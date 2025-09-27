@@ -45,25 +45,19 @@ if [[ $1 =~ ^https?:// ]] || [[ $1 =~ ^git:// ]] || [[ $1 =~ \.git$ ]]; then
     echo "Successfully cloned to: $REPO_DIR"
     cd "$REPO_DIR"
 else
-    # Handle local source files
+    # Handle GitHub workspace files
     echo "Detected local source: $1"
+    TARGET_DIR="$GITHUB_WORKSPACE/$1"
 
-    # Check if we're already in the correct directory
-    if [ "$(basename "$PWD")" == "$1" ]; then
-        echo "Already in the correct directory: $1"
-    elif [ -d "$1" ]; then
-        echo "Changing to directory: $1"
-        cd "$1"
-    elif [ ! -z "$GITHUB_WORKSPACE" ] && [ -d "$GITHUB_WORKSPACE/$1" ]; then
-        TARGET_DIR="$GITHUB_WORKSPACE/$1"
-        echo "Changing to directory: $TARGET_DIR"
-        cd "$TARGET_DIR"
-    else
-        echo "Error: Directory $1 not found"
+    if [ ! -d "$TARGET_DIR" ]; then
+        echo "Error: Directory $TARGET_DIR not found"
         echo "Available directories in workspace:"
         ls -la "$GITHUB_WORKSPACE/" 2>/dev/null || echo "Workspace not accessible"
         exit 1;
     fi
+
+    echo "Changing to directory: $TARGET_DIR"
+    cd "$TARGET_DIR"
 fi
 
 makepkg -sf --noconfirm --skippgpcheck
