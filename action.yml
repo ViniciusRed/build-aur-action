@@ -10,9 +10,18 @@ inputs:
   custom-repo:
     description: 'Custom repository to add to pacman.conf'
     required: false
+  enable-multilib:
+    description: 'Enable multilib repository'
+    required: false
+    default: 'false'
+  install-packages:
+    description: 'Additional packages to install (space-separated)'
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
     - ${{ inputs.package-source }}
     - ${{ inputs.custom-repo }}
+    - ${{ inputs.enable-multilib }}
+    - ${{ inputs.install-packages }}
