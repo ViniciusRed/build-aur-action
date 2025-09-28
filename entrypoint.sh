@@ -43,7 +43,11 @@ if [[ $1 =~ ^https?:// ]] || [[ $1 =~ ^git:// ]] || [[ $1 =~ \.git$ ]]; then
     fi
 
     echo "Successfully cloned to: $REPO_DIR"
-    cd "$REPO_DIR"
+    if [ "$(pwd)" != "$REPO_DIR" ]; then
+        cd "$REPO_DIR"
+    else
+        echo "Already in target directory, skipping cd"
+    fi
 else
     # Handle GitHub workspace files
     echo "Detected local source: $1"
@@ -57,7 +61,11 @@ else
     fi
 
     echo "Changing to directory: $TARGET_DIR"
-    cd "$TARGET_DIR"
+    if [ "$(pwd)" != "$TARGET_DIR" ]; then
+        cd "$TARGET_DIR"
+    else
+        echo "Already in target directory, skipping cd"
+    fi
 fi
 
 makepkg -sf --noconfirm --skippgpcheck
