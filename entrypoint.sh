@@ -53,18 +53,31 @@ else
     echo "Detected local source: $1"
     TARGET_DIR="$GITHUB_WORKSPACE/$1"
 
-    if [ ! -d "$TARGET_DIR" ]; then
-        echo "Error: Directory $TARGET_DIR not found"
-        echo "Available directories in workspace:"
-        ls -la "$GITHUB_WORKSPACE/" 2>/dev/null || echo "Workspace not accessible"
-        exit 1;
-    fi
-
-    echo "Changing to directory: $TARGET_DIR"
-    if [ "$(pwd)" != "$TARGET_DIR" ]; then
-        cd "$TARGET_DIR"
+    # Check if it's a directory first
+    if [ -d "$TARGET_DIR" ]; then
+        echo "Changing to directory: $TARGET_DIR"
+        if [ "$(pwd)" != "$TARGET_DIR" ]; then
+            cd "$TARGET_DIR"
+        else
+            echo "Already in target directory, skipping cd"
+        fi
     else
-        echo "Already in target directory, skipping cd"
+        # Check if it's a file (PKGBUILD) in the current workspace
+        PKGBUILD_FILE="$GITHUB_WORKSPACE/$1/PKGBUILD"
+        if [ -f "$PKGBUILD_FILE" ]; then
+            echo "Found PKGBUILD in: $GITHUB_WORKSPACE/$1"
+            TARGET_DIR="$GITHUB_WORKSPACE/$1"
+            if [ "$(pwd)" != "$TARGET_DIR" ]; then
+                cd "$TARGET_DIR"
+            else
+                echo "Already in target directory, skipping cd"
+            fi
+        else
+            echo "Error: Neither directory $TARGET_DIR nor PKGBUILD found in $GITHUB_WORKSPACE/$1"
+            echo "Available directories in workspace:"
+            ls -la "$GITHUB_WORKSPACE/" 2>/dev/null || echo "Workspace not accessible"
+            exit 1;
+        fi
     fi
 fi
 
