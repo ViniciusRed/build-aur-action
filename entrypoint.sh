@@ -51,9 +51,6 @@ if [[ $1 =~ ^https?:// ]] || [[ $1 =~ ^git:// ]] || [[ $1 =~ \.git$ ]]; then
 else
    # Handle GitHub workspace files
     echo "Detected local source: $1"
-    if [ ! -d "$1" ]; then
-        echo "Error: Directory $1 does not exist"; exit 1;
-    fi
 fi
 
 makepkg -sf --noconfirm --skippgpcheck
