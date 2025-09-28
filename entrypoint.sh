@@ -49,35 +49,24 @@ if [[ $1 =~ ^https?:// ]] || [[ $1 =~ ^git:// ]] || [[ $1 =~ \.git$ ]]; then
         echo "Already in target directory, skipping cd"
     fi
 else
-    # Handle GitHub workspace files
+    # Handle local source files
     echo "Detected local source: $1"
-    TARGET_DIR="$GITHUB_WORKSPACE/$1"
 
-    # Check if it's a directory first
-    if [ -d "$TARGET_DIR" ]; then
+    # Check if we're already in the correct directory
+    if [ "$(basename "$PWD")" == "$1" ]; then
+        echo "Already in the correct directory: $1"
+    elif [ -d "$1" ]; then
+        echo "Changing to directory: $1"
+        cd "$1"
+    elif [ ! -z "$GITHUB_WORKSPACE" ] && [ -d "$GITHUB_WORKSPACE/$1" ]; then
+        TARGET_DIR="$GITHUB_WORKSPACE/$1"
         echo "Changing to directory: $TARGET_DIR"
-        if [ "$(pwd)" != "$TARGET_DIR" ]; then
-            cd "$TARGET_DIR"
-        else
-            echo "Already in target directory, skipping cd"
-        fi
+        cd "$TARGET_DIR"
     else
-        # Check if it's a file (PKGBUILD) in the current workspace
-        PKGBUILD_FILE="$GITHUB_WORKSPACE/$1/PKGBUILD"
-        if [ -f "$PKGBUILD_FILE" ]; then
-            echo "Found PKGBUILD in: $GITHUB_WORKSPACE/$1"
-            TARGET_DIR="$GITHUB_WORKSPACE/$1"
-            if [ "$(pwd)" != "$TARGET_DIR" ]; then
-                cd "$TARGET_DIR"
-            else
-                echo "Already in target directory, skipping cd"
-            fi
-        else
-            echo "Error: Neither directory $TARGET_DIR nor PKGBUILD found in $GITHUB_WORKSPACE/$1"
-            echo "Available directories in workspace:"
-            ls -la "$GITHUB_WORKSPACE/" 2>/dev/null || echo "Workspace not accessible"
-            exit 1;
-        fi
+        echo "Error: Directory $1 not found"
+        echo "Available directories in workspace:"
+        ls -la "$GITHUB_WORKSPACE/" 2>/dev/null || echo "Workspace not accessible"
+        exit 1;
     fi
 fi
 
