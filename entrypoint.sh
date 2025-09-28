@@ -49,24 +49,10 @@ if [[ $1 =~ ^https?:// ]] || [[ $1 =~ ^git:// ]] || [[ $1 =~ \.git$ ]]; then
         echo "Already in target directory, skipping cd"
     fi
 else
-    # Handle local source files
+   # Handle GitHub workspace files
     echo "Detected local source: $1"
-
-    # Check if we're already in the correct directory
-    if [ "$(basename "$PWD")" == "$1" ]; then
-        echo "Already in the correct directory: $1"
-    elif [ -d "$1" ]; then
-        echo "Changing to directory: $1"
-        cd "$1"
-    elif [ ! -z "$GITHUB_WORKSPACE" ] && [ -d "$GITHUB_WORKSPACE/$1" ]; then
-        TARGET_DIR="$GITHUB_WORKSPACE/$1"
-        echo "Changing to directory: $TARGET_DIR"
-        cd "$TARGET_DIR"
-    else
-        echo "Error: Directory $1 not found"
-        echo "Available directories in workspace:"
-        ls -la "$GITHUB_WORKSPACE/" 2>/dev/null || echo "Workspace not accessible"
-        exit 1;
+    if [ ! -d "$1" ]; then
+        echo "Error: Directory $1 does not exist"; exit 1;
     fi
 fi
 
